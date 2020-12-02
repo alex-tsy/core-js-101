@@ -104,8 +104,7 @@ function angleBetweenClockHands(date) {
   const m = date.getMinutes();
   let angle = Math.abs(60 * h - 11 * m) * 0.5;
   angle = angle > 180 ? 360 - angle : angle;
-  const radians = Math.abs(angle * Math.PI) / 180;
-  return radians;
+  return (angle * Math.PI) / 180;
 }
 
 

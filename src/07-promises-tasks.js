@@ -98,11 +98,12 @@ function getFastestPromise(array) {
  *    });
  *
  */
-/* eslint-disable no-unused-vars */
 function chainPromises(array, action) {
-  return array.reduce((prev, curr) => prev.then((a) => a)
-    .catch((error) => 0)
-    .then((a) => curr.then((b) => action(a, b))));
+  return new Promise((resolve) => {
+    const processed = [];
+    array.forEach((p) => p.then((res) => processed.push(res)).catch((e) => e));
+    resolve(processed);
+  }).then((arr) => arr.reduce((a, b) => action(a, b)));
 }
 
 module.exports = {

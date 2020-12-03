@@ -278,8 +278,20 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const str = ccn.toString();
+  const delta = str.length % 2 === 0 ? 0 : 1;
+  let sum = 0;
+
+  for (let i = 0; i < str.length; i += 1) {
+    let curr = Number.parseInt(str[i], 10);
+    if ((i + delta) % 2 === 0) {
+      curr *= 2;
+      if (curr > 9) curr -= 9;
+    }
+    sum += curr;
+  }
+  return sum % 10 === 0;
 }
 
 /**
@@ -323,8 +335,14 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const open = '[({<';
+  const close = '])}>';
+  const stack = [];
+  str.split('').forEach((x) => {
+    if (open.includes(x) || open.indexOf(stack.pop()) !== close.indexOf(x)) stack.push(x);
+  });
+  return stack.length === 0;
 }
 
 
@@ -365,8 +383,20 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  let common = '';
+  const dirs = pathes.map((x) => [...x.split('/').slice(0, -1)]);
+  const min = dirs.map((x) => x.length).reduce((p, c) => Math.min(p, c));
+
+  for (let j = 0; j < min; j += 1) {
+    for (let i = 0; i < pathes.length - 1; i += 1) {
+      if (dirs[i][j] !== dirs[i + 1][j]) {
+        return common;
+      }
+    }
+    common += `${dirs[0][j]}/`;
+  }
+  return common;
 }
 
 
@@ -374,8 +404,8 @@ function getCommonDirectoryPath(/* pathes */) {
  * Returns the product of two specified matrixes.
  * See details: https://en.wikipedia.org/wiki/Matrix_multiplication
  *
- * @param {array} m1
- * @param {array} m2
+ * @param {array} a
+ * @param {array} b
  * @return {array}
  *
  * @example:
@@ -388,8 +418,23 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(a, b) {
+  const l = a.length;
+  const m = a[0].length;
+  const n = b[0].length;
+  const result = [];
+
+  for (let i = 0; i < l; i += 1) {
+    result[i] = [];
+    for (let j = 0; j < n; j += 1) {
+      let c = 0;
+      for (let r = 0; r < m; r += 1) {
+        c += a[i][r] * b[r][j];
+      }
+      result[i][j] = c;
+    }
+  }
+  return result;
 }
 
 

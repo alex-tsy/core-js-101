@@ -468,8 +468,32 @@ function getMatrixProduct(a, b) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const isWinner = (sign) => {
+    for (let i = 0; i < position.length; i += 1) {
+      let rowCount = 0;
+      for (let j = 0; j < position.length; j += 1) {
+        if (position[i][j] === sign) rowCount += 1;
+      }
+      if (rowCount === 3) return true;
+    }
+    for (let i = 0; i < position.length; i += 1) {
+      let columnCount = 0;
+      for (let j = 0; j < position.length; j += 1) {
+        if (position[j][i] === sign) columnCount += 1;
+      }
+      if (columnCount === 3) return true;
+    }
+    if (position[0][0] === sign && position[1][1] === sign && position[2][2] === sign) return true;
+    if (position[0][2] === sign && position[1][1] === sign && position[2][0] === sign) return true;
+
+    return false;
+  };
+
+  if (isWinner('X')) return 'X';
+  if (isWinner('0')) return '0';
+
+  return undefined;
 }
 
 

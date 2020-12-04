@@ -118,32 +118,74 @@ function fromJSON(proto, json) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  selector: '',
+
+  clone(value) {
+    const c = { ...this };
+    c.selector = value;
+    return c;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  throwDoubleInvocationError() {
+    throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  throwOrderInvocationError() {
+    throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  lock(errorFunction, ...methods) {
+    methods.forEach((method) => {
+      this[method] = errorFunction;
+    });
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    const next = this.clone(this.selector + value);
+    next.element = this.throwDoubleInvocationError;
+    return next;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    const next = this.clone(`${this.selector}#${value}`);
+    next.id = this.throwDoubleInvocationError;
+    next.element = this.throwOrderInvocationError;
+    return next;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  class(value) {
+    const next = this.clone(`${this.selector}.${value}`);
+    next.lock(this.throwOrderInvocationError, 'id', 'element');
+    return next;
+  },
+
+  attr(value) {
+    const next = this.clone(`${this.selector}[${value}]`);
+    next.lock(this.throwOrderInvocationError, 'id', 'element', 'class');
+    return next;
+  },
+
+  pseudoClass(value) {
+    const next = this.clone(`${this.selector}:${value}`);
+    next.lock(this.throwOrderInvocationError, 'id', 'element', 'class', 'attr');
+    return next;
+  },
+
+  pseudoElement(value) {
+    const next = this.clone(`${this.selector}::${value}`);
+    next.pseudoElement = this.throwDoubleInvocationError;
+    next.lock(this.throwOrderInvocationError, 'id', 'element', 'class', 'attr', 'pseudoClass');
+    return next;
+  },
+
+  combine(selector1, combinator, selector2) {
+    const next = { ...this };
+    next.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return next;
+  },
+
+  stringify() {
+    return this.selector;
   },
 };
 
